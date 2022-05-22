@@ -1,0 +1,38 @@
+type Query {
+  projects: [Project]
+  project(id: Int!): Task
+}
+
+type Mutation {
+  createProject(createProjectInput: CreateProjectInput): Project
+  editProject(editProjectInput: EditProjectInput): Project
+}
+
+type Subscription {
+  projectCreated: Project
+  projectEdited: Project
+}
+
+type Project {
+  id: Int!
+  name: String!
+  code: String!
+  description: String
+  accentColor: String
+  onCreated: DateTime!
+  onUpdated: DateTime!
+}
+
+"""
+Inputs
+"""
+input CreateProjectInput {
+  name: String!
+  code: String!
+}
+
+input EditProjectInput {
+  name: String
+  code: String
+}
+

@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "paths": {
+      "@components": ["./components/index.tsx"],
+      "@components/*": ["./components/*"],
+      "@theme": ["./theme/index.ts"],
+      "@api/*": ["./api/*"],
+      "@@types": ["./typings/index.ts"],
+      "@ui": ["./ui/index.ts"],
+      "@utils": ["./utils/index.ts"]
+    }
+  }
+}
