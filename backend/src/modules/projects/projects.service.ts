@@ -2,15 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { Project } from '../../graphql.schema';
-import { ProjectEntity } from './project.entity';
+import { Project } from './project.entity';
 import { EditProjectDto } from './dto/edit-project.dto';
 import { CreateProjectDto } from './dto/create-project.dto';
 
 @Injectable()
 export class ProjectsService {
   constructor(
-    @InjectRepository(ProjectEntity)
+    @InjectRepository(Project)
     private projectsRepository: Repository<Project>
   ) {}
 
@@ -20,11 +19,12 @@ export class ProjectsService {
     });
   }
 
-  async edit({ id, ...project }: EditProjectDto): Promise<Project> {
+  async edit({ id, ...project }: EditProjectDto): Promise<Omit<Project, 'updateDates'>> {
     let dataToUpdate = await this.projectsRepository.findOne({
       id,
     });
 
+    // @ts-ignore
     dataToUpdate = {
       ...dataToUpdate,
       ...project,
@@ -37,7 +37,7 @@ export class ProjectsService {
     return await this.projectsRepository.find();
   }
 
-  findOneById(id: number): Promise<Project> {
+  async findOneById(id: number): Promise<Project> {
     return this.projectsRepository.findOne(id);
   }
 }

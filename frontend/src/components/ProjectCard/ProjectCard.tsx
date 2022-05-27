@@ -8,13 +8,21 @@ import { Project } from '@@types';
 
 type ProjectCardProps = Project & {};
 
-export const ProjectCard: React.FC<ProjectCardProps> = ({ code, name, accentColor }) => {
+export const ProjectCard: React.FC<ProjectCardProps> = ({
+  code,
+  name,
+  description,
+  accentColor,
+}) => {
   return (
     <Wrapper to={`/${code}`}>
       <Inner>
         <Title>
           <Color accentColor={accentColor} />
-          {name}
+          <Text>
+            <span>{name}</span>
+            <Description>{description}</Description>
+          </Text>
         </Title>
       </Inner>
     </Wrapper>
@@ -49,7 +57,7 @@ const Inner = styled.div`
 const Title = styled.span`
   display: inline-flex;
   align-items: center;
-  font-size: 1em;
+  font-size: ${rem(14)};
   font-style: inherit;
   color: ${token('color.text')};
   white-space: nowrap;
@@ -70,4 +78,18 @@ const Color = styled.div<ColorStyleProps>`
   border-radius: ${rem(6)};
   margin-right: ${rem(6)};
   background-color: ${({ accentColor }) => accentColor};
+`;
+
+const Text = styled.div`
+  display: flex;
+  flex-flow: column;
+`;
+
+const Description = styled.span`
+  display: inline-flex;
+  align-items: center;
+  margin-top: ${rem(3)};
+  font-size: ${rem(12)};
+  font-weight: 400;
+  color: ${token('color.text.subtle')};
 `;

@@ -1,9 +1,17 @@
-import { MinLength } from 'class-validator';
-import { CreateTaskInput } from '../../../graphql.schema';
+import { MinLength, IsNumber } from 'class-validator';
+import { InputType, Field } from '@nestjs/graphql';
 
-export class CreateTaskDto extends CreateTaskInput {
+@InputType()
+export class CreateTaskDto {
+  @Field()
   @MinLength(1, { message: 'Min 1 character' })
   title: string;
+
+  @Field({ nullable: true })
   @MinLength(1, { message: 'Min 1 character' })
-  description: string;
+  description?: string;
+
+  @Field()
+  @IsNumber()
+  projectId: number;
 }

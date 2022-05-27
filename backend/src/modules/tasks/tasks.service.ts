@@ -2,16 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { CreateTaskInput, Task, TasksList } from '../../graphql.schema';
-import { TaskEntity } from './task.entity';
+import { Task } from './task.entity';
+import { CreateTaskDto } from './dto/create-task.dto';
 import { EditTaskDto } from './dto/edit-task.dto';
 import { FilterDto } from './dto/filter.dto';
+import { Project } from '../projects/project.entity';
 
 @Injectable()
 export class TasksService {
   constructor(
-    @InjectRepository(TaskEntity)
-    private tasks: Repository<Task>
+    @InjectRepository(Task)
+    private tasks: Repository<Task>,
+    @InjectRepository(Project)
+    private projectsRepository: Repository<Project>
   ) {
     this.DEFAULT_DIRECTION = 'DESC';
     this.DEFAULT_SORT = 'onUpdated';
@@ -24,19 +27,27 @@ export class TasksService {
   DEFAULT_TAKE;
   DEFAULT_SKIP;
 
-  async create(task: CreateTaskInput): Promise<Task> {
+  async create(task: CreateTaskDto): Promise<Task> {
+    const project = await this.projectsRepository.findOne(task.projectId);
     const data = await this.tasks.create({
       ...task,
+      project,
     });
     await this.tasks.manager.save(data);
     return data;
   }
 
   async edit({ id, ...task }: EditTaskDto): Promise<Task> {
-    let dataToUpdate = await this.tasks.findOne({
-      id,
-    });
+    let dataToUpdate = await this.tasks.findOne(
+      {
+        id,
+      },
+      {
+        relations: ['project'],
+      }
+    );
 
+    // @ts-ignore
     dataToUpdate = {
       ...dataToUpdate,
       ...task,
@@ -45,7 +56,7 @@ export class TasksService {
     return await this.tasks.save(dataToUpdate);
   }
 
-  async findAll(filter: FilterDto): Promise<TasksList> {
+  async findAll(filter: FilterDto): Promise<any> {
     const {
       sortName = this.DEFAULT_SORT,
       sortDirection = this.DEFAULT_DIRECTION,
@@ -59,6 +70,7 @@ export class TasksService {
       },
       take,
       skip,
+      relations: ['project'],
     });
 
     return {
@@ -68,6 +80,8 @@ export class TasksService {
   }
 
   findOneById(id: number): Promise<Task> {
-    return this.tasks.findOne(id);
+    return this.tasks.findOne(id, {
+      relations: ['project'],
+    });
   }
 }

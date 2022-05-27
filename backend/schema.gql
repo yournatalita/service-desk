@@ -1,0 +1,86 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+directive @upper on FIELD_DEFINITION
+
+type Project {
+  id: ID!
+  name: String!
+  code: String!
+  onCreated: DateTime!
+  onUpdated: DateTime!
+  description: String!
+  accentColor: String!
+  tasks: [Task!]!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Task {
+  id: ID!
+  title: String!
+  description: String
+  onCreated: DateTime!
+  onUpdated: DateTime!
+  project: Project!
+}
+
+type TasksList {
+  list: [Task!]!
+  total: Float!
+}
+
+type Query {
+  tasks(filter: FilterDto!): TasksList!
+  task(id: Float!): Task!
+  projects: [Project!]!
+  project(id: Float!): Project!
+}
+
+input FilterDto {
+  sortName: String
+  sortDirection: String
+  take: Float
+  skip: Float
+}
+
+type Mutation {
+  createTask(createTaskInput: CreateTaskDto!): Task!
+  editTask(editTaskInput: EditTaskDto!): Task!
+  createProject(createProjectInput: CreateProjectDto!): Project!
+  editProject(editProjectInput: EditProjectDto!): Project!
+}
+
+input CreateTaskDto {
+  title: String!
+  description: String
+  projectId: Float!
+}
+
+input EditTaskDto {
+  id: Float!
+  title: String!
+  description: String
+}
+
+input CreateProjectDto {
+  name: String!
+  code: String!
+  description: String
+}
+
+input EditProjectDto {
+  id: ID!
+  name: String!
+  code: String!
+  description: String
+}
+
+type Subscription {
+  taskCreated: Task!
+  projectCreated: Project!
+}

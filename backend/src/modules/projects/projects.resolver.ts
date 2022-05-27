@@ -2,26 +2,30 @@ import { ParseIntPipe, UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver, Subscription } from '@nestjs/graphql';
 import { PubSub } from 'graphql-subscriptions';
 
-import { Project } from '../../graphql.schema';
 import { ProjectsGuard } from './projects.guard';
 import { ProjectsService } from './projects.service';
 
 import { CreateProjectDto } from './dto/create-project.dto';
 import { EditProjectDto } from './dto/edit-project.dto';
+import { Project } from './project.entity';
 
 const pubSub = new PubSub();
 
-@Resolver('Project')
+@Resolver(() => Project)
 export class ProjectsResolver {
   constructor(private readonly projectsService: ProjectsService) {}
 
-  @Query('projects')
+  @Query((returns) => [Project], {
+    name: 'projects',
+  })
   @UseGuards(ProjectsGuard)
-  async getTasks() {
+  async getProjects() {
     return this.projectsService.findAll();
   }
 
-  @Query('project')
+  @Query((returns) => Project, {
+    name: 'project',
+  })
   async findOneById(
     @Args('id', ParseIntPipe)
     id: number
@@ -29,8 +33,8 @@ export class ProjectsResolver {
     return this.projectsService.findOneById(id);
   }
 
-  @Mutation('createProject')
-  async create(@Args('createProjectInput') args: CreateProjectDto): Promise<Project> {
+  @Mutation((returns) => Project)
+  async createProject(@Args('createProjectInput') args: CreateProjectDto): Promise<Project> {
     const newProject = await this.projectsService.create({
       ...args,
     });
@@ -38,8 +42,10 @@ export class ProjectsResolver {
     return newProject;
   }
 
-  @Mutation('editProject')
-  async edit(@Args('editProjectInput') args: EditProjectDto): Promise<Project> {
+  @Mutation((returns) => Project)
+  async editProject(
+    @Args('editProjectInput') args: EditProjectDto
+  ): Promise<Omit<Project, 'updateDates'>> {
     const newProject = await this.projectsService.edit({
       ...args,
     });
@@ -47,8 +53,8 @@ export class ProjectsResolver {
     return newProject;
   }
 
-  @Subscription('taskCreated')
-  taskCreated() {
-    return pubSub.asyncIterator('taskCreated');
+  @Subscription((returns) => Project)
+  projectCreated() {
+    return pubSub.asyncIterator('projectCreated');
   }
 }
