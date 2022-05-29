@@ -13,9 +13,10 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   name,
   description,
   accentColor,
+  tasks,
 }) => {
   return (
-    <Wrapper to={`/${code}`}>
+    <Wrapper to={`/projects/${code}`}>
       <Inner>
         <Title>
           <Color accentColor={accentColor} />
@@ -24,6 +25,12 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
             <Description>{description}</Description>
           </Text>
         </Title>
+        <Meta>
+          <MetaTitle>Quick links</MetaTitle>
+          <MetaLink to={`/projects/${code}?filter=open`}>
+            Open issues <Issues>{tasks.total}</Issues>
+          </MetaLink>
+        </Meta>
       </Inner>
     </Wrapper>
   );
@@ -52,6 +59,7 @@ const Wrapper = styled(Link)`
 
 const Inner = styled.div`
   padding: ${rem(16)};
+  width: 100%;
 `;
 
 const Title = styled.span`
@@ -92,4 +100,44 @@ const Description = styled.span`
   font-size: ${rem(12)};
   font-weight: 400;
   color: ${token('color.text.subtle')};
+`;
+
+const Meta = styled.div`
+  display: flex;
+  flex-flow: column;
+`;
+
+const MetaTitle = styled.h6`
+  font-size: ${rem(12)};
+  text-transform: uppercase;
+  color: ${token('color.text.subtle')};
+  margin: ${rem(10)} 0 ${rem(6)} 0;
+`;
+
+const MetaLink = styled(Link)`
+  display: inline-flex;
+  justify-content: space-between;
+  width: calc(100% + ${rem(8)});
+  text-decoration: none;
+  color: ${token('color.text')};
+  font-size: ${rem(12)};
+  padding: ${rem(4)};
+  border-radius: ${rem(4)};
+  margin: 0 ${rem(-4)};
+
+  &:hover {
+    background: ${token('color.background.subtleNeutral.resting')};
+  }
+`;
+
+const Issues = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: ${rem(1)} ${rem(4)};
+  line-height: 1;
+  border-radius: 20%;
+  min-width: ${rem(20)};
+
+  background: ${token('color.background.subtleNeutral.hover')};
 `;

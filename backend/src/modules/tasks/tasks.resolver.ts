@@ -1,6 +1,7 @@
 import { ParseIntPipe, UseGuards } from '@nestjs/common';
 import {
   Args,
+  Int,
   Mutation,
   Parent,
   Query,
@@ -28,7 +29,7 @@ export class TasksResolver {
     private readonly projectsService: ProjectsService
   ) {}
 
-  @Query((returns) => TasksList, {
+  @Query(returns => TasksList, {
     name: 'tasks',
   })
   @UseGuards(TasksGuard)
@@ -36,17 +37,17 @@ export class TasksResolver {
     return this.tasksService.findAll(filter);
   }
 
-  @Query((returns) => Task, {
+  @Query(returns => Task, {
     name: 'task',
   })
   async findOneById(
-    @Args('id', ParseIntPipe)
+    @Args({ name: 'id', type: () => Int }, ParseIntPipe)
     id: number
   ): Promise<Task> {
     return this.tasksService.findOneById(id);
   }
 
-  @Mutation((returns) => Task)
+  @Mutation(returns => Task)
   async createTask(@Args('createTaskInput') args: CreateTaskDto): Promise<Task> {
     const newTask = await this.tasksService.create({
       ...args,
@@ -55,7 +56,7 @@ export class TasksResolver {
     return newTask;
   }
 
-  @Mutation((returns) => Task)
+  @Mutation(returns => Task)
   async editTask(@Args('editTaskInput') args: EditTaskDto): Promise<Task> {
     const newTask = await this.tasksService.edit({
       ...args,
@@ -64,12 +65,12 @@ export class TasksResolver {
     return newTask;
   }
 
-  @Subscription((returns) => Task)
+  @Subscription(returns => Task)
   taskCreated() {
     return pubSub.asyncIterator('taskCreated');
   }
 
-  @ResolveField('project', (returns) => Project)
+  @ResolveField('project', returns => Project)
   async getProject(@Parent() task: Task) {
     const { project } = task;
 

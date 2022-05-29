@@ -6,8 +6,9 @@ import {
   UpdateDateColumn,
   CreateDateColumn,
   OneToMany,
+  JoinColumn,
 } from 'typeorm';
-import { Field, ID, ObjectType } from '@nestjs/graphql';
+import { Field, ID, Int, ObjectType } from '@nestjs/graphql';
 
 import { getRandomOfColors } from '../../utils';
 import { Task } from '../tasks/task.entity';
@@ -15,7 +16,7 @@ import { Task } from '../tasks/task.entity';
 @Entity({ name: 'project', schema: 'public' })
 @ObjectType()
 export class Project {
-  @Field((type) => ID)
+  @Field(type => ID)
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
@@ -43,12 +44,15 @@ export class Project {
   @Column({ type: 'character varying', nullable: true, default: getRandomOfColors() })
   accentColor: string;
 
-  @Field((type) => [Task])
-  @OneToMany(() => Task, (task) => task.id)
+  @Field(type => [Task])
+  @OneToMany(() => Task, task => task.project, {
+    createForeignKeyConstraints: true,
+  })
+  @JoinColumn({ name: 'task_id' })
   tasks: Task[];
 
   @BeforeUpdate()
-  updateDates() {
+  updateDates?() {
     this.onUpdated = new Date();
   }
 }

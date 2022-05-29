@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { Task } from './task.entity';
+import { Task, TasksList } from './task.entity';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { EditTaskDto } from './dto/edit-task.dto';
 import { FilterDto } from './dto/filter.dto';
@@ -47,7 +47,6 @@ export class TasksService {
       }
     );
 
-    // @ts-ignore
     dataToUpdate = {
       ...dataToUpdate,
       ...task,
@@ -56,7 +55,7 @@ export class TasksService {
     return await this.tasks.save(dataToUpdate);
   }
 
-  async findAll(filter: FilterDto): Promise<any> {
+  async findAll(filter: FilterDto): Promise<TasksList> {
     const {
       sortName = this.DEFAULT_SORT,
       sortDirection = this.DEFAULT_DIRECTION,
@@ -70,6 +69,22 @@ export class TasksService {
       },
       take,
       skip,
+      relations: ['project'],
+    });
+
+    return {
+      total: data[1],
+      list: data[0],
+    };
+  }
+
+  async findAllByProjectId({ projectId }: FilterDto): Promise<TasksList> {
+    const data = await this.tasks.findAndCount({
+      where: {
+        project: {
+          id: projectId,
+        },
+      },
       relations: ['project'],
     });
 

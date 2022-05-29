@@ -1,5 +1,14 @@
 import { ParseIntPipe, UseGuards } from '@nestjs/common';
-import { Args, Mutation, Query, Resolver, Subscription } from '@nestjs/graphql';
+import {
+  Args,
+  Mutation,
+  Parent,
+  Query,
+  ResolveField,
+  Resolver,
+  Subscription,
+  Int,
+} from '@nestjs/graphql';
 import { PubSub } from 'graphql-subscriptions';
 
 import { ProjectsGuard } from './projects.guard';
@@ -8,14 +17,19 @@ import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { EditProjectDto } from './dto/edit-project.dto';
 import { Project } from './project.entity';
+import { TasksList } from '../tasks/task.entity';
+import { TasksService } from '../tasks/tasks.service';
 
 const pubSub = new PubSub();
 
 @Resolver(() => Project)
 export class ProjectsResolver {
-  constructor(private readonly projectsService: ProjectsService) {}
+  constructor(
+    private readonly projectsService: ProjectsService,
+    private readonly tasksService: TasksService
+  ) {}
 
-  @Query((returns) => [Project], {
+  @Query(returns => [Project], {
     name: 'projects',
   })
   @UseGuards(ProjectsGuard)
@@ -23,17 +37,17 @@ export class ProjectsResolver {
     return this.projectsService.findAll();
   }
 
-  @Query((returns) => Project, {
+  @Query(returns => Project, {
     name: 'project',
   })
   async findOneById(
-    @Args('id', ParseIntPipe)
+    @Args({ name: 'id', type: () => Int }, ParseIntPipe)
     id: number
   ): Promise<Project> {
     return this.projectsService.findOneById(id);
   }
 
-  @Mutation((returns) => Project)
+  @Mutation(returns => Project)
   async createProject(@Args('createProjectInput') args: CreateProjectDto): Promise<Project> {
     const newProject = await this.projectsService.create({
       ...args,
@@ -42,7 +56,7 @@ export class ProjectsResolver {
     return newProject;
   }
 
-  @Mutation((returns) => Project)
+  @Mutation(returns => Project)
   async editProject(
     @Args('editProjectInput') args: EditProjectDto
   ): Promise<Omit<Project, 'updateDates'>> {
@@ -53,8 +67,15 @@ export class ProjectsResolver {
     return newProject;
   }
 
-  @Subscription((returns) => Project)
+  @Subscription(returns => Project)
   projectCreated() {
     return pubSub.asyncIterator('projectCreated');
+  }
+
+  @ResolveField('tasks', returns => TasksList)
+  async getProject(@Parent() project: Project) {
+    const { id } = project;
+
+    return await this.tasksService.findAllByProjectId({ projectId: id });
   }
 }

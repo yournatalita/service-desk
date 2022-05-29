@@ -12,7 +12,7 @@ type Project {
   onUpdated: DateTime!
   description: String!
   accentColor: String!
-  tasks: [Task!]!
+  tasks: TasksList!
 }
 
 """
@@ -27,6 +27,7 @@ type Task {
   onCreated: DateTime!
   onUpdated: DateTime!
   project: Project!
+  status: String!
 }
 
 type TasksList {
@@ -36,16 +37,19 @@ type TasksList {
 
 type Query {
   tasks(filter: FilterDto!): TasksList!
-  task(id: Float!): Task!
+  task(id: Int!): Task!
   projects: [Project!]!
-  project(id: Float!): Project!
+  project(id: Int!): Project!
 }
 
 input FilterDto {
   sortName: String
   sortDirection: String
-  take: Float
-  skip: Float
+  take: Int
+  skip: Int
+  projectId: Int
+  status: String
+  statusState: String
 }
 
 type Mutation {
@@ -65,6 +69,7 @@ input EditTaskDto {
   id: Float!
   title: String!
   description: String
+  status: String
 }
 
 input CreateProjectDto {
@@ -74,9 +79,9 @@ input CreateProjectDto {
 }
 
 input EditProjectDto {
-  id: ID!
-  name: String!
-  code: String!
+  id: ID
+  name: String
+  code: String
   description: String
 }
 

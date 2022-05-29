@@ -11,12 +11,14 @@ import {
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 
 import { Project } from '../projects/project.entity';
+import { StatusType } from './tasks.enums';
+
 
 @Entity({ name: 'task', schema: 'public' })
 @ObjectType()
 export class Task {
   @PrimaryGeneratedColumn({ type: 'bigint' })
-  @Field((type) => ID)
+  @Field(type => ID)
   id!: number;
 
   @Field()
@@ -36,15 +38,18 @@ export class Task {
   onUpdated: Date;
 
   @Field()
-  @ManyToOne(() => Project, (project) => project.tasks, {
+  @ManyToOne(() => Project, project => project.tasks, {
     createForeignKeyConstraints: true,
     cascade: true,
   })
   @JoinColumn({ name: 'project_id' })
   project: Project;
 
+  @Field({ defaultValue: 'open' })
+  status: StatusType;
+
   @BeforeUpdate()
-  updateDates() {
+  updateDates?() {
     this.onUpdated = new Date();
   }
 }
@@ -52,7 +57,7 @@ export class Task {
 @ObjectType()
 export class TasksList {
   @Field(type => [Task])
-  list: [Task];
+  list: Task[];
 
   @Field()
   total: number;

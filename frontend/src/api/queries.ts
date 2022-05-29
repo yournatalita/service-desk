@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 export const GET_TASKS = gql`
-  query GetTasks($filter: FilterTask) {
+  query GetTasks($filter: FilterDto!) {
     tasks(filter: $filter) {
       list {
         id
@@ -33,6 +33,9 @@ export const GET_PROJECTS_ALL = gql`
       code
       accentColor
       description
+      tasks {
+        total
+      }
     }
   }
 `;

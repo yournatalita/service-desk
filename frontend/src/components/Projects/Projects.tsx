@@ -30,6 +30,7 @@ const List = styled.div`
 
 const Item = styled.div`
   display: flex;
-  width: calc(100% / 3 - ${rem(12)});
+  max-width: calc(100% / 3 - ${rem(12)});
+  width: ${rem(340)};
   margin: 0 ${rem(6)} ${rem(16)} ${rem(6)};
 `;
