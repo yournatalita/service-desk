@@ -12,13 +12,23 @@ type Project {
   onUpdated: DateTime!
   description: String!
   accentColor: String!
-  tasks: TasksList!
+  tasks(filter: FilterDto): TasksList!
 }
 
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
 scalar DateTime
+
+input FilterDto {
+  sortName: String
+  sortDirection: String
+  take: Int
+  skip: Int
+  projectId: Int
+  status: String
+  statusState: String
+}
 
 type Task {
   id: ID!
@@ -40,16 +50,6 @@ type Query {
   task(id: Int!): Task!
   projects: [Project!]!
   project(id: Int!): Project!
-}
-
-input FilterDto {
-  sortName: String
-  sortDirection: String
-  take: Int
-  skip: Int
-  projectId: Int
-  status: String
-  statusState: String
 }
 
 type Mutation {

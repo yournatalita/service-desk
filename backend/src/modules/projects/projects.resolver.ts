@@ -19,6 +19,7 @@ import { EditProjectDto } from './dto/edit-project.dto';
 import { Project } from './project.entity';
 import { TasksList } from '../tasks/task.entity';
 import { TasksService } from '../tasks/tasks.service';
+import { FilterDto } from '../tasks/dto/filter.dto';
 
 const pubSub = new PubSub();
 
@@ -73,9 +74,12 @@ export class ProjectsResolver {
   }
 
   @ResolveField('tasks', returns => TasksList)
-  async getProject(@Parent() project: Project) {
+  async getProject(
+    @Parent() project: Project,
+    @Args('filter', { nullable: true }) filter?: FilterDto
+  ) {
     const { id } = project;
 
-    return await this.tasksService.findAllByProjectId({ projectId: id });
+    return await this.tasksService.findAll({ projectId: id, ...filter });
   }
 }

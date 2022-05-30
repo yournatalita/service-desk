@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindConditions, In, MoreThan, Repository } from 'typeorm';
 
 import { Task, TasksList } from './task.entity';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { EditTaskDto } from './dto/edit-task.dto';
 import { FilterDto } from './dto/filter.dto';
 import { Project } from '../projects/project.entity';
+import { TaskEnums } from './tasks.enums';
 
 @Injectable()
 export class TasksService {
@@ -61,7 +62,21 @@ export class TasksService {
       sortDirection = this.DEFAULT_DIRECTION,
       take = this.DEFAULT_TAKE,
       skip = this.DEFAULT_SKIP,
+      statusState,
+      projectId,
     } = filter || {};
+
+    let where: FindConditions<Task> = {};
+
+    if (statusState) {
+      where.status = In(TaskEnums.STATUS_STATES[statusState]);
+    }
+
+    if (projectId) {
+      where.project = {
+        id: projectId,
+      };
+    }
 
     const data = await this.tasks.findAndCount({
       order: {
@@ -69,6 +84,7 @@ export class TasksService {
       },
       take,
       skip,
+      where,
       relations: ['project'],
     });
 

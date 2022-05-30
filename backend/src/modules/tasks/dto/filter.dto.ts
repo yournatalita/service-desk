@@ -37,5 +37,5 @@ export class FilterDto {
   @Field({ nullable: true })
   @IsOptional()
   @IsIn(Object.keys(TaskEnums.STATUS_STATES), { message: 'Wrong Status Key' })
-  statusState?: StatusType;
+  statusState?: 'open' | 'closed';
 }

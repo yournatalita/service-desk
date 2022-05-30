@@ -11,7 +11,7 @@ import {
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 
 import { Project } from '../projects/project.entity';
-import { StatusType } from './tasks.enums';
+import { StatusType, TaskEnumDefaults } from './tasks.enums';
 
 
 @Entity({ name: 'task', schema: 'public' })
@@ -46,6 +46,7 @@ export class Task {
   project: Project;
 
   @Field({ defaultValue: 'open' })
+  @Column({ type: 'character varying', nullable: false, default: TaskEnumDefaults.DEFAULT_STATUS })
   status: StatusType;
 
   @BeforeUpdate()
