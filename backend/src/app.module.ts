@@ -14,15 +14,18 @@ import { TasksModule } from './modules/tasks/tasks.module';
 import { ProjectsModule } from './modules/projects/projects.module';
 import { Task } from './modules/tasks/task.entity';
 import { Project } from './modules/projects/project.entity';
+import { User } from './modules/users/user.entity';
+import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [
     TasksModule,
     ProjectsModule,
+    UsersModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: 'schema.gql',
-      transformSchema: (schema) => upperDirectiveTransformer(schema, 'upper'),
+      transformSchema: schema => upperDirectiveTransformer(schema, 'upper'),
       installSubscriptionHandlers: true,
       buildSchemaOptions: {
         directives: [
@@ -40,7 +43,7 @@ import { Project } from './modules/projects/project.entity';
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
       database: 'service-desk',
-      entities: [Task, Project],
+      entities: [Task, Project, User],
       logging: true,
       synchronize: true,
       namingStrategy: new SnakeNamingStrategy(),

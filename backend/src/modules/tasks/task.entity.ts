@@ -12,6 +12,7 @@ import { Field, ID, ObjectType } from '@nestjs/graphql';
 
 import { Project } from '../projects/project.entity';
 import { StatusType, TaskEnumDefaults } from './tasks.enums';
+import { User } from '../users/user.entity';
 
 
 @Entity({ name: 'task', schema: 'public' })
@@ -44,6 +45,22 @@ export class Task {
   })
   @JoinColumn({ name: 'project_id' })
   project: Project;
+
+  @Field(type => User)
+  @ManyToOne(() => User, user => user.createdTasks, {
+    createForeignKeyConstraints: true,
+    cascade: true,
+  })
+  @JoinColumn({ name: 'user_id' })
+  creatorUser: User;
+
+  @Field(type => User)
+  @ManyToOne(() => User, user => user.assignedTasks, {
+    createForeignKeyConstraints: true,
+    cascade: true,
+  })
+  @JoinColumn({ name: 'user_assigned_id' })
+  assignedToUser: User;
 
   @Field({ defaultValue: 'open' })
   @Column({ type: 'character varying', nullable: false, default: TaskEnumDefaults.DEFAULT_STATUS })

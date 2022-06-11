@@ -30,6 +30,15 @@ input FilterDto {
   statusState: String
 }
 
+type User {
+  id: ID!
+  externalId: ID!
+  onCreated: DateTime!
+  onUpdated: DateTime!
+  createdTasks: [Task!]!
+  assignedTasks: [Task!]!
+}
+
 type Task {
   id: ID!
   title: String!
@@ -37,6 +46,8 @@ type Task {
   onCreated: DateTime!
   onUpdated: DateTime!
   project: Project!
+  creatorUser: User!
+  assignedToUser: User!
   status: String!
 }
 
@@ -50,6 +61,15 @@ type Query {
   task(id: Int!): Task!
   projects: [Project!]!
   project(id: Int!): Project!
+  users(filter: FilterUsersDto!): [User!]!
+  user(id: Int!): User!
+}
+
+input FilterUsersDto {
+  sortName: String
+  sortDirection: String
+  take: Int
+  skip: Int
 }
 
 type Mutation {
@@ -57,6 +77,7 @@ type Mutation {
   editTask(editTaskInput: EditTaskDto!): Task!
   createProject(createProjectInput: CreateProjectDto!): Project!
   editProject(editProjectInput: EditProjectDto!): Project!
+  editUser(editUser: EditUserDto!): User!
 }
 
 input CreateTaskDto {
@@ -85,7 +106,12 @@ input EditProjectDto {
   description: String
 }
 
+input EditUserDto {
+  externalId: String!
+}
+
 type Subscription {
   taskCreated: Task!
   projectCreated: Project!
+  userCreated: User!
 }
