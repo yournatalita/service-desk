@@ -39,3 +39,18 @@ export const GET_PROJECTS_ALL = gql`
     }
   }
 `;
+
+export const GET_PROJECTS_ALL_WITH_TASKS_FILTER = gql`
+  query GetProjects($filter: FilterDto) {
+    projects {
+      name
+      id
+      code
+      accentColor
+      description
+      tasks(filter: $filter) {
+        total
+      }
+    }
+  }
+`;

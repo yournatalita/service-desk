@@ -9,6 +9,8 @@ export const getRandomOfColors = () => {
     '#BAF3DB',
     '#C1F0F5',
     '#DFD8FD',
+    "#60C6D2",
+    "#FDD0EC",
     '#FDD0EC',
   ];
 
